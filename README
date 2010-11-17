@@ -1,3 +1,6 @@
+Javascript library to play a Space Invaders clone on any site using existing DOM elements as the enemies.
+Inspired by the Asteroids DOM manipulator at http://erkie.github.com/
+
 LICENSE:
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
