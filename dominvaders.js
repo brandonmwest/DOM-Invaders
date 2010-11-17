@@ -2,7 +2,6 @@ var domInvaders = {
 	initialize: function() {
 		this.getConfiguration();
 		this.setupCanvas();
-		this.checkBrowser();
 	},
 	
 	getConfiguration: function() {
@@ -45,6 +44,9 @@ var domInvaders = {
 		}
 		
 		this.container.appendChild(this.canvas);
+		if (!this.checkBrowser()){
+			return;
+		}
 		this.ctx = this.canvas.getContext("2d");
 		this.ctx.fillStyle = "black";
 		this.ctx.strokeStyle = "black";
@@ -53,6 +55,8 @@ var domInvaders = {
 	checkBrowser: function() {
 		if ( ! this.canvas.getContext ) {
 			alert('Your browser sucks too much to play. Sorry.');
+			return false;
 		}
+		return true;
 	}
 };
