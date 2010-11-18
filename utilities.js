@@ -1,3 +1,9 @@
+function code(name) {
+	var table = {'up': 38, 'down': 40, 'left': 37, 'right': 39, 'esc': 27};
+	if ( table[name] ) return table[name];
+	return name.charCodeAt(0);
+};
+
 
 //Taken from:
 //http://fitzgeraldnick.com/weblog/26/
@@ -64,4 +70,14 @@ function removeStylesheet(name) {
 	if ( stylesheet ) {
 		stylesheet.parentNode.removeChild(stylesheet);
 	}
+};
+
+
+function indexOf(arr, item, from){
+	if ( arr.indexOf ) return arr.indexOf(item, from);
+	var len = arr.length;
+	for (var i = (from < 0) ? Math.max(0, len + from) : from || 0; i < len; i++){
+		if (arr[i] === item) return i;
+	}
+	return -1;
 };

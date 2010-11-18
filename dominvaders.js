@@ -1,18 +1,21 @@
 var domInvaders = {
 	initialize: function() {
-		this.getConfiguration();
 		this.setupCanvas();
+		this.getConfiguration();
 		this.drawing.game = this;
 		this.setupResize();
-		this.setupPlayer();
+		this.setupKeys();
+		
+		//this.draw();
 		//todo: import utilties.js 
-
+		this.intervalId = setInterval(bind(this,this.draw), 10);
 	},
 	
 	getConfiguration: function() {
 		this.playerWidth = 50;
 		this.playerHeight = 20;
 		// units/second
+		
 		this.acc = 300;
 		this.maxSpeed = 600;
 		
@@ -23,6 +26,9 @@ var domInvaders = {
 		this.bulletRadius = 2;
 		this.maxParticles = 40;
 		this.maxBullets = 10;
+	
+		this.playerX = (this.w-this.playerWidth)/2;
+		this.playerY = this.h-this.playerHeight-10;
 	},
 	
 	setupCanvas: function(){
@@ -81,9 +87,32 @@ var domInvaders = {
 		return true;
 	},
 	
-	setupPlayer: function() {
+	drawPlayer: function() {
 		//draw the ship
-		this.drawing.rect(this.w/2, this.h-this.playerHeight, this.playerWidth, this.playerHeight);
+		this.drawing.rect(this.playerX, this.playerY, this.playerWidth, this.playerHeight);
+	},
+	
+	setupKeys: function() {
+		this.keysPressed = {};
+		addEvent(document, 'keydown', bind(this,this.eventKeydown));
+		addEvent(document, 'keypress', bind(this,this.eventKeypress));
+		addEvent(document, 'keyup', bind(this,this.eventKeyup));
+	},
+	
+	draw: function() {
+		this.drawing.clear();
+		this.setPlayerXY();
+		this.drawPlayer();		
+	},
+	
+	setPlayerXY: function() {
+		console.log(this);
+		if(this.keysPressed[code('left')]) {
+			this.playerX = this.playerX - 5;
+		}
+		if(this.keysPressed[code('right')]) {
+			this.playerX = this.playerX + 5;
+		}
 	},
 	
 	drawing: {
@@ -94,9 +123,48 @@ var domInvaders = {
 			this.game.ctx.closePath();
 			this.game.ctx.fill();
 		},
-		
 		clear: function() {
-			this.game.ctx.clearRect(0, 0, game.w, game.h);
+			this.game.ctx.clearRect(0, 0, this.game.w, this.game.h);
 		}
-	}
+	},
+	
+	eventKeydown: function(event) {
+		event = event || window.event;
+		this.keysPressed[event.keyCode] = true;
+		
+		/*switch ( event.keyCode ) {
+			case code(' '):
+				that.firedAt = 1;
+			break;
+		}*/
+		
+		this.stopEventPropagation(event);
+		return false;
+	},
+	
+	eventKeypress: function(event) {
+		event = event || window.event;
+		this.stopEventPropagation(event);
+		return false;
+	},
+	
+	eventKeyup: function(event) {
+		event = event || window.event;
+		this.keysPressed[event.keyCode] = false;
+
+		this.stopEventPropagation(event);
+		return false;
+	},
+	
+	stopEventPropagation: function(event){
+		if ( indexOf([code('up'), code('down'), code('right'), code('left'), code(' '), code('B'), code('W'), code('A'), code('S'), code('D')], event.keyCode) != -1 ) {
+			if ( event.preventDefault )
+				event.preventDefault();
+			if ( event.stopPropagation)
+				event.stopPropagation();
+			event.returnValue = false;
+			event.cancelBubble = true;
+			return false;
+		}
+	}	
 };
