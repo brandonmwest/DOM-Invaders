@@ -2,9 +2,11 @@ var domInvaders = {
 	initialize: function() {
 		this.getConfiguration();
 		this.setupCanvas();
+		this.drawing.game = this;
 		this.setupResize();
 		this.setupPlayer();
 		//todo: import utilties.js 
+
 	},
 	
 	getConfiguration: function() {
@@ -85,13 +87,16 @@ var domInvaders = {
 	},
 	
 	drawing: {
-		ctx: '',
+		game: '',
 		rect: function(x,y,w,h) {
-		  this.ctx.beginPath();
-		  this.ctx.rect(x,y,w,h);
-		  this.ctx.closePath();
-		  this.ctx.fill();
+			this.game.ctx.beginPath();
+			this.game.ctx.rect(x,y,w,h);
+			this.game.ctx.closePath();
+			this.game.ctx.fill();
+		},
+		
+		clear: function() {
+			this.game.ctx.clearRect(0, 0, game.w, game.h);
 		}
 	}
-
 };
