@@ -14,12 +14,9 @@ var domInvaders = {
 		this.playerWidth = 50;
 		this.playerHeight = 20;
 		
-		//pixel based values so the speed changes based on canvas size. implement scaled values
-		this.playerSpeed = 5;
-		this.bulletSpeed = 10;
-		
 		//these are dependent on the interval time 
 		//todo: switch to FPS calculated values
+		this.bulletSpeed = 10;
 		this.particleSpeed = 400;
  		this.timeBetweenEnemyFire = 150;
 		this.bulletRadius = 4;
@@ -122,11 +119,11 @@ var domInvaders = {
 	
 	setPlayerXY: function() {
 		if(this.keysPressed[code('left')]) {
-			var newX = this.playerX - this.playerSpeed;
+			var newX = this.playerX - 5;
 			this.playerX = newX <= 0 ? 0 : newX;
 		}
 		if(this.keysPressed[code('right')]) {
-			var newX = this.playerX + this.playerSpeed;
+			var newX = this.playerX + 5;
 			this.playerX = newX >= this.w - this.playerWidth ? this.w  - this.playerWidth : newX;
 		}
 	},
