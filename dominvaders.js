@@ -6,7 +6,6 @@ var domInvaders = {
 		this.setupResize();
 		this.setupKeys();
 		
-		//this.draw();
 		//todo: import utilties.js 
 		this.intervalId = setInterval(bind(this,this.draw), 10);
 	},
@@ -14,16 +13,16 @@ var domInvaders = {
 	getConfiguration: function() {
 		this.playerWidth = 50;
 		this.playerHeight = 20;
-		// units/second
 		
-		this.acc = 300;
-		this.maxSpeed = 600;
+		//pixel based values so the speed changes based on canvas size. implement scaled values
+		this.playerSpeed = 5;
+		this.bulletSpeed = 10;
 		
-		this.bulletSpeed = 700;
+		//these are dependent on the interval time 
+		//todo: switch to FPS calculated values
 		this.particleSpeed = 400;
-		this.timeBetweenFire = 150; // how many milliseconds between shots
-		this.timeBetweenEnemyFire = 150;
-		this.bulletRadius = 2;
+ 		this.timeBetweenEnemyFire = 150;
+		this.bulletRadius = 4;
 		this.maxParticles = 40;
 	
 		this.playerX = (this.w-this.playerWidth)/2;
@@ -90,6 +89,21 @@ var domInvaders = {
 		this.drawing.rect(this.playerX, this.playerY, this.playerWidth, this.playerHeight);
 	},
 	
+	fireBullet: function() {
+		if(this.firing)
+			return;
+			
+		this.firing = true;
+		this.drawBullet();
+	},
+	
+	drawBullet: function() {
+		this.bulletX = this.playerX + this.playerWidth/2;
+		this.bulletY = this.playerY;
+		
+		this.drawing.circle(this.bulletX, this.bulletY, this.bulletRadius);
+	},
+	
 	setupKeys: function() {
 		this.keysPressed = {};
 		addEvent(document, 'keydown', bind(this,this.eventKeydown));
@@ -100,18 +114,31 @@ var domInvaders = {
 	draw: function() {
 		this.drawing.clear();
 		this.setPlayerXY();
-		this.drawPlayer();		
+		this.drawPlayer();
+		
+		if(this.firing)
+			this.updateBullet();
 	},
 	
 	setPlayerXY: function() {
 		if(this.keysPressed[code('left')]) {
-			var newX = this.playerX - 5;
+			var newX = this.playerX - this.playerSpeed;
 			this.playerX = newX <= 0 ? 0 : newX;
 		}
 		if(this.keysPressed[code('right')]) {
-			var newX = this.playerX + 5;
+			var newX = this.playerX + this.playerSpeed;
 			this.playerX = newX >= this.w - this.playerWidth ? this.w  - this.playerWidth : newX;
 		}
+	},
+	
+	updateBullet: function() {
+		//move bullet
+		this.bulletY = this.bulletY - this.bulletSpeed;
+		this.drawing.circle(this.bulletX, this.bulletY, this.bulletRadius);
+
+		//check for collision or bound
+		if(this.bulletY <= 0)
+			this.firing = false;
 	},
 	
 	drawing: {
@@ -119,6 +146,12 @@ var domInvaders = {
 		rect: function(x,y,w,h) {
 			this.game.ctx.beginPath();
 			this.game.ctx.rect(x,y,w,h);
+			this.game.ctx.closePath();
+			this.game.ctx.fill();
+		},
+		circle: function(x,y,r) {
+			this.game.ctx.beginPath();
+			this.game.ctx.arc(x, y, r, 0, Math.PI*2, true);
 			this.game.ctx.closePath();
 			this.game.ctx.fill();
 		},
@@ -133,7 +166,7 @@ var domInvaders = {
 		
 		switch ( event.keyCode ) {
 			case code(' '):
-				that.firedAt = 1;
+				this.fireBullet();
 			break;
 		}
 		
