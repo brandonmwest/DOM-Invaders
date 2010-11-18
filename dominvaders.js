@@ -2,6 +2,9 @@ var domInvaders = {
 	initialize: function() {
 		this.getConfiguration();
 		this.setupCanvas();
+		this.setupResize();
+		this.setupPlayer();
+		//todo: import utilties.js 
 	},
 	
 	getConfiguration: function() {
@@ -21,20 +24,20 @@ var domInvaders = {
 	},
 	
 	setupCanvas: function(){
-		w = document.documentElement.clientWidth;
-		h = document.documentElement.clientHeight;
+		this.w = document.documentElement.clientWidth;
+		this.h = document.documentElement.clientHeight;
 		
 		this.container = document.createElement('div');
 		this.container.className = 'domInvadersContainer';
 		document.body.appendChild(this.container);
 
 		this.canvas = document.createElement('canvas');
-		this.canvas.setAttribute('width', w);
-		this.canvas.setAttribute('height', h);
+		this.canvas.setAttribute('width', this.w);
+		this.canvas.setAttribute('height', this.h);
 		this.canvas.className = 'domInvadersCanvas';
 		with ( this.canvas.style ) {
-			width = w + "px";
-			height = h + "px";
+			width = this.w + "px";
+			height = this.h + "px";
 			position = "fixed";
 			top = "0px";
 			left = "0px";
@@ -50,13 +53,45 @@ var domInvaders = {
 		this.ctx = this.canvas.getContext("2d");
 		this.ctx.fillStyle = "black";
 		this.ctx.strokeStyle = "black";
+		this.drawing.ctx = this.ctx;
 	},
 	
+	setupResize: function() {
+		//depends on utilities.js
+		addEvent(window, 'resize', bind(this,this.eventResize));
+	},
+	
+	eventResize: function() {		
+		this.w = document.documentElement.clientWidth;
+		this.h = document.documentElement.clientHeight;
+		
+		this.canvas.setAttribute('width', this.w);
+		this.canvas.setAttribute('height', this.h);
+		
+		//todo: reposition the player and enemies ?
+	},
+		
 	checkBrowser: function() {
 		if ( ! this.canvas.getContext ) {
 			alert('Your browser sucks too much to play. Sorry.');
 			return false;
 		}
 		return true;
+	},
+	
+	setupPlayer: function() {
+		//draw the ship
+		this.drawing.rect(this.w/2, this.h-this.playerHeight, this.playerWidth, this.playerHeight);
+	},
+	
+	drawing: {
+		ctx: '',
+		rect: function(x,y,w,h) {
+		  this.ctx.beginPath();
+		  this.ctx.rect(x,y,w,h);
+		  this.ctx.closePath();
+		  this.ctx.fill();
+		}
 	}
+
 };

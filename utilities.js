@@ -1,3 +1,18 @@
+
+//Taken from:
+//http://fitzgeraldnick.com/weblog/26/
+function toArray(obj) {
+    return Array.prototype.slice.call(obj);
+}
+
+// Bind in its simplest form
+
+function bind(scope, fn) {
+    return function () {
+        return fn.apply(scope, toArray(arguments));
+    };
+}
+
 // Taken from:
 // http://www.quirksmode.org/blog/archives/2005/10/_and_the_winner_1.html
 function addEvent( obj, type, fn ) {
