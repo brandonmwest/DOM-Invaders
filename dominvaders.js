@@ -25,7 +25,6 @@ var domInvaders = {
 		this.timeBetweenEnemyFire = 150;
 		this.bulletRadius = 2;
 		this.maxParticles = 40;
-		this.maxBullets = 10;
 	
 		this.playerX = (this.w-this.playerWidth)/2;
 		this.playerY = this.h-this.playerHeight-10;
@@ -88,7 +87,6 @@ var domInvaders = {
 	},
 	
 	drawPlayer: function() {
-		//draw the ship
 		this.drawing.rect(this.playerX, this.playerY, this.playerWidth, this.playerHeight);
 	},
 	
@@ -106,12 +104,13 @@ var domInvaders = {
 	},
 	
 	setPlayerXY: function() {
-		console.log(this);
 		if(this.keysPressed[code('left')]) {
-			this.playerX = this.playerX - 5;
+			var newX = this.playerX - 5;
+			this.playerX = newX <= 0 ? 0 : newX;
 		}
 		if(this.keysPressed[code('right')]) {
-			this.playerX = this.playerX + 5;
+			var newX = this.playerX + 5;
+			this.playerX = newX >= this.w - this.playerWidth ? this.w  - this.playerWidth : newX;
 		}
 	},
 	
@@ -132,11 +131,11 @@ var domInvaders = {
 		event = event || window.event;
 		this.keysPressed[event.keyCode] = true;
 		
-		/*switch ( event.keyCode ) {
+		switch ( event.keyCode ) {
 			case code(' '):
 				that.firedAt = 1;
 			break;
-		}*/
+		}
 		
 		this.stopEventPropagation(event);
 		return false;
