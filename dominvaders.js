@@ -4,24 +4,29 @@ var domInvaders = {
 		this.getConfiguration();
 		this.drawing.game = this;
 		this.setupResize();
+		this.setPlayerStepSize();
+		this.setBulletStepSize();
 		this.setupKeys();
 		
 		//todo: import utilties.js 
-		this.intervalId = setInterval(bind(this,this.draw), 10);
+		this.intervalId = setInterval(bind(this,this.draw),1000/this.fps);
 	},
 	
 	getConfiguration: function() {
 		this.playerWidth = 50;
 		this.playerHeight = 20;
+		this.bulletWidth = 3;
+		this.bulletHeight = 12;
 		
-		//these are dependent on the interval time 
-		//todo: switch to FPS calculated values
-		this.bulletSpeed = 10;
-		this.particleSpeed = 400;
- 		this.timeBetweenEnemyFire = 150;
-		this.bulletRadius = 4;
-		this.maxParticles = 40;
-	
+		this.fps = 50;
+		
+		//scalars for the canvas size... number of units on each axis
+		this.unitsX = 80;
+		this.unitsY = 80;
+		
+		this.playerSpeed = .5;
+		this.bulletSpeed = 1.5;
+		
 		this.playerX = (this.w-this.playerWidth)/2;
 		this.playerY = this.h-this.playerHeight-10;
 	},
@@ -71,6 +76,8 @@ var domInvaders = {
 		this.canvas.setAttribute('width', this.w);
 		this.canvas.setAttribute('height', this.h);
 		
+		this.setPlayerStepSize();
+		this.setBulletStepSize();
 		//todo: reposition the player and enemies ?
 	},
 		
@@ -80,6 +87,14 @@ var domInvaders = {
 			return false;
 		}
 		return true;
+	},
+	
+	setPlayerStepSize: function() {
+		this.playerStepSize = this.w / this.unitsX * this.playerSpeed;
+	},
+	
+	setBulletStepSize: function() {
+		this.bulletStepSize = this.h / this.unitsY * this.bulletSpeed;
 	},
 	
 	drawPlayer: function() {
@@ -98,7 +113,7 @@ var domInvaders = {
 		this.bulletX = this.playerX + this.playerWidth/2;
 		this.bulletY = this.playerY;
 		
-		this.drawing.circle(this.bulletX, this.bulletY, this.bulletRadius);
+		this.drawing.rect(this.bulletX, this.bulletY, this.bulletWidth, this.bulletHeight);
 	},
 	
 	setupKeys: function() {
@@ -119,19 +134,19 @@ var domInvaders = {
 	
 	setPlayerXY: function() {
 		if(this.keysPressed[code('left')]) {
-			var newX = this.playerX - 5;
+			var newX = this.playerX - this.playerStepSize;
 			this.playerX = newX <= 0 ? 0 : newX;
 		}
 		if(this.keysPressed[code('right')]) {
-			var newX = this.playerX + 5;
+			var newX = this.playerX + this.playerStepSize;
 			this.playerX = newX >= this.w - this.playerWidth ? this.w  - this.playerWidth : newX;
 		}
 	},
 	
 	updateBullet: function() {
 		//move bullet
-		this.bulletY = this.bulletY - this.bulletSpeed;
-		this.drawing.circle(this.bulletX, this.bulletY, this.bulletRadius);
+		this.bulletY = this.bulletY - this.bulletStepSize;
+		this.drawing.rect(this.bulletX, this.bulletY, this.bulletWidth, this.bulletHeight);
 
 		//check for collision or bound
 		if(this.bulletY <= 0)
