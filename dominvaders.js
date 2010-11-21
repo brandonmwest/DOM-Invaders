@@ -14,7 +14,7 @@ var domInvaders = {
 	
 	getConfiguration: function() {
 		this.playerWidth = 50;
-		this.playerHeight = 20;
+		this.playerHeight = 15;
 		this.bulletWidth = 3;
 		this.bulletHeight = 12;
 		
@@ -98,7 +98,14 @@ var domInvaders = {
 	},
 	
 	drawPlayer: function() {
+		//base
 		this.drawing.rect(this.playerX, this.playerY, this.playerWidth, this.playerHeight);
+		//tier1
+		this.drawing.rect(this.playerX + this.playerWidth*.075, this.playerY - this.playerHeight*.25, this.playerWidth*.85, this.playerHeight*.25);
+		//tier2
+		this.drawing.rect(this.playerX + this.playerWidth*.40, this.playerY -  this.playerHeight*.80, this.playerWidth*.20, this.playerHeight*.80);
+		//top nub
+		this.drawing.rect(this.playerX + this.playerWidth/2-this.bulletWidth/2, this.playerY - this.playerHeight, this.bulletWidth, this.playerHeight*1.25);
 	},
 	
 	fireBullet: function() {
@@ -110,8 +117,8 @@ var domInvaders = {
 	},
 	
 	drawBullet: function() {
-		this.bulletX = this.playerX + this.playerWidth/2;
-		this.bulletY = this.playerY;
+		this.bulletX = this.playerX + this.playerWidth/2-this.bulletWidth/2;
+		this.bulletY = this.playerY - this.playerHeight*1.25;
 		
 		this.drawing.rect(this.bulletX, this.bulletY, this.bulletWidth, this.bulletHeight);
 	},
