@@ -8,6 +8,8 @@ var domInvaders = {
 		this.setBulletStepSize();
 		this.setupKeys();
 		
+		this.getEnemies();
+		
 		//todo: import utilties.js 
 		this.intervalId = setInterval(bind(this,this.draw),1000/this.fps);
 	},
@@ -130,10 +132,18 @@ var domInvaders = {
 		addEvent(document, 'keyup', bind(this,this.eventKeyup));
 	},
 	
+	getEnemies: function() {
+		//start simple... get <td>s
+		var tds = document.getElementsByTagName('td');
+		this.enemies = tds;
+	},
+	
 	draw: function() {
 		this.drawing.clear();
 		this.setPlayerXY();
 		this.drawPlayer();
+		
+		this.updateEnemies();
 		
 		if(this.firing)
 			this.updateBullet();
@@ -158,6 +168,36 @@ var domInvaders = {
 		//check for collision or bound
 		if(this.bulletY <= 0)
 			this.firing = false;
+		
+		for(var i=0; i < this.enemies.length; i++){	
+
+			var enemy = this.enemies[i];
+			console.log(enemy);
+			var xy = getXYpos(enemy);
+			var y = xy.y;
+
+			if(this.bulletY>y)
+				return;
+					
+			if(enemy.className.indexOf('dead') != -1)
+				return;
+
+			var x1 = xy.x;
+			var x2 = x1+enemy.clientWidth;
+			
+			if(this.bulletX >= x1 && this.bulletX <=x2){
+				console.log(enemy);
+				enemy.removeChild(enemy.childNodes[0]);
+				addClass(enemy,'dead');
+				this.firing = false;
+				break;
+				return;
+			}
+		}
+	},
+	
+	updateEnemies: function() {
+	
 	},
 	
 	drawing: {

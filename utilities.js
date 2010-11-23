@@ -81,3 +81,15 @@ function indexOf(arr, item, from){
 	}
 	return -1;
 };
+
+function getXYpos(el) {
+   if (!el) {
+      return {"x":0,"y":0};
+   }
+   var xy={"x":el.offsetLeft,"y":el.offsetTop}
+   var par=getXYpos(el.offsetParent);
+   for (var key in par) {
+      xy[key]+=par[key];
+   }
+   return xy;
+}
