@@ -8,8 +8,6 @@ var domInvaders = {
 		this.setBulletStepSize();
 		this.setupKeys();
 		
-		this.getEnemies();
-		
 		//todo: import utilties.js 
 		this.intervalId = setInterval(bind(this,this.draw),1000/this.fps);
 	},
@@ -31,6 +29,9 @@ var domInvaders = {
 		
 		this.playerX = (this.w-this.playerWidth)/2;
 		this.playerY = this.h-this.playerHeight-10;
+		
+		this.ignoredTags = ['HTML', 'HEAD', 'BODY', 'SCRIPT', 'TITLE', 'META', 'STYLE', 'LINK'];
+		this.hiddenTags = ['BR', 'HR'];
 	},
 	
 	setupCanvas: function(){
@@ -68,10 +69,10 @@ var domInvaders = {
 	
 	setupResize: function() {
 		//depends on utilities.js
-		addEvent(window, 'resize', bind(this,this.eventResize));
+		addEvent(window, 'resize', bind(this,this.resize));
 	},
 	
-	eventResize: function() {		
+	resize: function() {		
 		this.w = document.documentElement.clientWidth;
 		this.h = document.documentElement.clientHeight;
 		
@@ -127,17 +128,11 @@ var domInvaders = {
 	
 	setupKeys: function() {
 		this.keysPressed = {};
-		addEvent(document, 'keydown', bind(this,this.eventKeydown));
-		addEvent(document, 'keypress', bind(this,this.eventKeypress));
-		addEvent(document, 'keyup', bind(this,this.eventKeyup));
+		addEvent(document, 'keydown', bind(this,this.keydown));
+		addEvent(document, 'keypress', bind(this,this.keypress));
+		addEvent(document, 'keyup', bind(this,this.keyup));
 	},
-	
-	getEnemies: function() {
-		//start simple... get <td>s
-		var tds = document.getElementsByTagName('td');
-		this.enemies = tds;
-	},
-	
+		
 	draw: function() {
 		this.drawing.clear();
 		this.setPlayerXY();
@@ -168,32 +163,52 @@ var domInvaders = {
 		//check for collision or bound
 		if(this.bulletY <= 0)
 			this.firing = false;
+
+		var collidedElement = this.getElementFromPoint(this.bulletX, this.bulletY);
+	
+		if(collidedElement 
+			&& (indexOf(this.ignoredTags, collidedElement.tagName.toUpperCase()) == -1)
+			&& this.hasOnlyTextualChildren(collidedElement)){
 		
-		for(var i=0; i < this.enemies.length; i++){	
-
-			var enemy = this.enemies[i];
-			console.log(enemy);
-			var xy = getXYpos(enemy);
-			var y = xy.y;
-
-			if(this.bulletY>y)
-				return;
-					
-			if(enemy.className.indexOf('dead') != -1)
-				return;
-
-			var x1 = xy.x;
-			var x2 = x1+enemy.clientWidth;
+			collidedElement.parentNode.removeChild(collidedElement);
 			
-			if(this.bulletX >= x1 && this.bulletX <=x2){
-				console.log(enemy);
-				enemy.removeChild(enemy.childNodes[0]);
-				addClass(enemy,'dead');
-				this.firing = false;
-				break;
-				return;
-			}
+			addClass(collidedElement,'dead');
+			this.firing = false;
+
+			return;
 		}
+	},
+	
+	getElementFromPoint: function(x, y) {
+		this.canvas.style.visibility='hidden';
+
+		var element = document.elementFromPoint(x, y);
+
+		if (!element) {
+			this.canvas.style.visibility='visible';
+			return false;
+		}
+
+		if ( element.nodeType == 3 )
+			element = element.parentNode;
+
+		this.canvas.style.visibility='visible';
+		return element;
+	},
+	
+	hasOnlyTextualChildren: function(element) {
+		if ( element.offsetLeft < -100 && element.offsetWidth > 0 && element.offsetHeight > 0 ) return false;
+		if ( indexOf(this.hiddenTags, element.tagName) != -1 ) return true;
+		
+		if ( element.offsetWidth == 0 && element.offsetHeight == 0 ) return false;
+		for ( var i = 0; i < element.childNodes.length; i++ ) {
+			// <br /> doesn't count... and empty elements
+			if (
+				indexOf(this.hiddenTags, element.childNodes[i].tagName) == -1
+				&& element.childNodes[i].childNodes.length != 0
+			) return false;
+		}
+		return true;
 	},
 	
 	updateEnemies: function() {
@@ -219,7 +234,7 @@ var domInvaders = {
 		}
 	},
 	
-	eventKeydown: function(event) {
+	keydown: function(event) {
 		event = event || window.event;
 		this.keysPressed[event.keyCode] = true;
 		
@@ -233,13 +248,13 @@ var domInvaders = {
 		return false;
 	},
 	
-	eventKeypress: function(event) {
+	keypress: function(event) {
 		event = event || window.event;
 		this.stopEventPropagation(event);
 		return false;
 	},
 	
-	eventKeyup: function(event) {
+	keyup: function(event) {
 		event = event || window.event;
 		this.keysPressed[event.keyCode] = false;
 
