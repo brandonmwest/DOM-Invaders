@@ -93,3 +93,19 @@ function getXYpos(el) {
    }
    return xy;
 }
+
+function absolutize(el) {
+	console.log(el);
+	var pos = getXYpos(el);
+	var top = pos.y;
+	var left = pos.x;
+	var width = el.clientWidth;
+	var height = el.clientHeight;
+ 
+	el.style.position='absolute';
+	el.style.top = top + 'px';
+	el.style.left = left + 'px';
+	el.style.width = width + 'px';
+	el.style.height = height + 'px';
+	return el;
+};

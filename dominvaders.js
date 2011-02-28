@@ -166,10 +166,7 @@ var domInvaders = {
 
 		var collidedElement = this.getElementFromPoint(this.bulletX, this.bulletY);
 	
-		if(collidedElement 
-			&& (indexOf(this.ignoredTags, collidedElement.tagName.toUpperCase()) == -1)
-			&& this.hasOnlyTextualChildren(collidedElement)){
-		
+		if(collidedElement){
 			collidedElement.parentNode.removeChild(collidedElement);
 			
 			addClass(collidedElement,'dead');
@@ -192,8 +189,14 @@ var domInvaders = {
 		if ( element.nodeType == 3 )
 			element = element.parentNode;
 
+		if (indexOf(this.ignoredTags, element.tagName.toUpperCase()) == -1
+			&& this.hasOnlyTextualChildren(element)){
+				this.canvas.style.visibility='visible';
+				return absolutize(element);
+			}
 		this.canvas.style.visibility='visible';
-		return element;
+
+		return false;
 	},
 	
 	hasOnlyTextualChildren: function(element) {
@@ -201,7 +204,9 @@ var domInvaders = {
 		if ( indexOf(this.hiddenTags, element.tagName) != -1 ) return true;
 		
 		if ( element.offsetWidth == 0 && element.offsetHeight == 0 ) return false;
-		for ( var i = 0; i < element.childNodes.length; i++ ) {
+		
+		var nodeCount = element.childNodes.length;
+		for ( var i = 0; i < nodeCount; i++ ) {
 			// <br /> doesn't count... and empty elements
 			if (
 				indexOf(this.hiddenTags, element.childNodes[i].tagName) == -1
