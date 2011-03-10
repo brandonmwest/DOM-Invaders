@@ -19,8 +19,10 @@ domInvaders.prototype.init = function () {
 	this.intervalId = setInterval(this.bind(this, this.draw), 1000 / this.fps);
 };
 
-domInvaders.prototype.setupUtilities = function () {
+domInvaders.prototype.setupDrawing = function () {
 	this.drawing = new domInvaders.drawing(this);
+	
+	
 };
 
 domInvaders.prototype.getConfiguration = function () {
@@ -74,7 +76,6 @@ domInvaders.prototype.setupCanvas = function () {
 	this.ctx = this.canvas.getContext("2d");
 	this.ctx.fillStyle = "black";
 	this.ctx.strokeStyle = "black";
-	this.drawing.ctx = this.ctx;
 };
 
 domInvaders.prototype.setupResize = function () {
@@ -210,4 +211,52 @@ domInvaders.prototype.updateBullet = function () {
 
 domInvaders.prototype.updateEnemies = function () {
 
+};
+
+domInvaders.prototype.draw = function () {
+	this.clear();
+	this.setPlayerXY();
+	this.drawPlayer();
+	
+	this.updateEnemies();
+	
+	if (this.firing) {
+		this.updateBullet();
+	}
+};
+
+domInvaders.prototype.drawPlayer = function () {
+	//base
+	this.rect(this.playerX, this.playerY, this.playerWidth, this.playerHeight);
+	//tier1
+	this.rect(this.playerX + this.playerWidth * 0.075, this.playerY - this.playerHeight * 0.25, this.playerWidth * 0.85, this.playerHeight * 0.25);
+	//tier2
+	this.rect(this.playerX + this.playerWidth * 0.40, this.playerY -  this.playerHeight * 0.80, this.playerWidth * 0.20, this.playerHeight * 0.80);
+	//top nub
+	this.rect(this.playerX + this.playerWidth / 2 - this.bulletWidth / 2, this.playerY - this.playerHeight, this.bulletWidth, this.playerHeight * 1.25);
+};
+	
+domInvaders.prototype.drawBullet = function () {
+	this.bulletX = this.playerX + this.playerWidth / 2 - this.bulletWidth / 2;
+	this.bulletY = this.playerY - this.playerHeight * 1.25;
+	
+	this.rect(this.bulletX, this.bulletY, this.bulletWidth, this.bulletHeight);
+};
+
+domInvaders.prototype.rect = function (x, y, w, h) {
+	this.ctx.beginPath();
+	this.ctx.rect(x, y, w, h);
+	this.ctx.closePath();
+	this.ctx.fill();
+};
+
+domInvaders.prototype.circle = function (x, y, r) {
+	this.ctx.beginPath();
+	this.ctx.arc(x, y, r, 0, Math.PI * 2, true);
+	this.ctx.closePath();
+	this.ctx.fill();
+};
+		
+domInvaders.prototype.clear = function () {
+	this.ctx.clearRect(0, 0, this.w, this.h);
 };
