@@ -1,8 +1,10 @@
-var domInvaders = function() {
+/*global window */
+
+var domInvaders = function () {
     this.init();
 };
 
-domInvaders.prototype.init = function() {
+domInvaders.prototype.init = function () {
 	this.setupUtilities();
 	this.setupDrawing();
 	this.setupCanvas();
@@ -15,19 +17,18 @@ domInvaders.prototype.init = function() {
 	
 	//todo: import utilties.js and drawing.js
 	//fire up the loop
-	this.intervalId = setInterval(bind(this,this.draw),1000/this.fps);
+	this.intervalId = setInterval(this.utilities.bind(this, this.draw), 1000 / this.fps);
+};
 
-}
-
-domInvaders.prototype.setupUtilities = function() {
+domInvaders.prototype.setupUtilities = function () {
 	this.utilities = new domInvaders.utilities();
-}
+};
 
-domInvaders.prototype.setupUtilities = function() {
+domInvaders.prototype.setupUtilities = function () {
 	this.drawing = new domInvaders.drawing(this);
-}
+};
 
-domInvaders.prototype.getConfiguration = function() {
+domInvaders.prototype.getConfiguration = function () {
 	//possibly refactor to extend from another object that is passed in so these are only applied as defaults
 	this.playerWidth = 50;
 	this.playerHeight = 15;
@@ -40,17 +41,17 @@ domInvaders.prototype.getConfiguration = function() {
 	this.unitsX = 80;
 	this.unitsY = 80;
 	
-	this.playerSpeed = .5;
+	this.playerSpeed = 0.5;
 	this.bulletSpeed = 1.5;
 	
-	this.playerX = (this.w-this.playerWidth)/2;
-	this.playerY = this.h-this.playerHeight-10;
+	this.playerX = (this.w - this.playerWidth) / 2;
+	this.playerY = this.h - this.playerHeight - 10;
 	
 	this.ignoredTags = ['HTML', 'HEAD', 'BODY', 'SCRIPT', 'TITLE', 'META', 'STYLE', 'LINK'];
 	this.hiddenTags = ['BR', 'HR'];
-}
+};
 
-domInvaders.prototype.setupCanvas = function(){
+domInvaders.prototype.setupCanvas = function () {
 	this.w = document.documentElement.clientWidth;
 	this.h = document.documentElement.clientHeight;
 	
@@ -72,21 +73,21 @@ domInvaders.prototype.setupCanvas = function(){
 	this.canvas.style.zIndex = "10000";
 		
 	this.container.appendChild(this.canvas);
-	if (!this.checkBrowser()){
+	if (!this.checkBrowser()) {
 		return;
 	}
 	this.ctx = this.canvas.getContext("2d");
 	this.ctx.fillStyle = "black";
 	this.ctx.strokeStyle = "black";
 	this.drawing.ctx = this.ctx;
-}
+};
 
-domInvaders.prototype.setupResize = function() {
+domInvaders.prototype.setupResize = function () {
 	//depends on utilities.js
-	addEvent(window, 'resize', bind(this,this.resize));
-}
+	this.utilities.addEvent(window, 'resize', this.utilities.bind(this, this.resize));
+};
 
-domInvaders.prototype.resize = function() {		
+domInvaders.prototype.resize = function () {		
 	this.w = document.documentElement.clientWidth;
 	this.h = document.documentElement.clientHeight;
 	
@@ -96,31 +97,34 @@ domInvaders.prototype.resize = function() {
 	this.setPlayerStepSize();
 	this.setBulletStepSize();
 	//todo: reposition the player and enemies ?
-}
+};
 
-domInvaders.prototype.setPlayerStepSize = function() {
+domInvaders.prototype.setPlayerStepSize = function () {
 	this.playerStepSize = this.w / this.unitsX * this.playerSpeed;
-}
+};
 	
-domInvaders.prototype.setBulletStepSize = function() {
+domInvaders.prototype.setBulletStepSize = function () {
 	this.bulletStepSize = this.h / this.unitsY * this.bulletSpeed;
-}
+};
 
-domInvaders.prototype.setupKeys: function() {
+domInvaders.prototype.setupKeys = function () {
 	this.keysPressed = {};
-	addEvent(document, 'keydown', bind(this,this.events.keydown));
-	addEvent(document, 'keypress', bind(this,this.events.keypress));
-	addEvent(document, 'keyup', bind(this,this.events.keyup));
-},
+	this.utilities.addEvent(document, 'keydown', this.utilities.bind(this, this.events.keydown));
+	this.utilities.addEvent(document, 'keypress', this.utilities.bind(this, this.events.keypress));
+	this.utilities.addEvent(document, 'keyup', this.utilities.bind(this, this.events.keyup));
+};
 
 domInvaders.prototype.events = {
-	keydown: function(event) {
+	keydown: function (event) {
 		event = event || window.event;
 		this.keysPressed[event.keyCode] = true;
 		
-		switch ( event.keyCode ) {
-			case code(' '):
-				this.fireBullet();
+		switch (event.keyCode) {
+		case this.utilities.code(' '):
+			this.fireBullet();
+			break;
+			
+		default:
 			break;
 		}
 		
@@ -128,13 +132,13 @@ domInvaders.prototype.events = {
 		return false;
 	},
 	
-	keypress: function(event) {
+	keypress: function (event) {
 		event = event || window.event;
 		this.stopEventPropagation(event);
 		return false;
 	},
 	
-	keyup: function(event) {
+	keyup: function (event) {
 		event = event || window.event;
 		this.keysPressed[event.keyCode] = false;
 
@@ -142,64 +146,73 @@ domInvaders.prototype.events = {
 		return false;
 	},
 	
-	stopEventPropagation: function(event){
-		if ( indexOf([code('up'), code('down'), code('right'), code('left'), code(' '), code('B'), code('W'), code('A'), code('S'), code('D')], event.keyCode) != -1 ) {
-			if ( event.preventDefault )
+	stopEventPropagation: function (event) {
+		var code = this.utilities.code;
+		if (this.utilities.indexOf([code('up'), code('down'), code('right'), code('left'), code(' '), code('B'), code('W'), code('A'), code('S'), code('D')], event.keyCode) !== -1) {
+			if (event.preventDefault) {
 				event.preventDefault();
-			if ( event.stopPropagation)
+			}
+			if (event.stopPropagation) {
 				event.stopPropagation();
+			}
 			event.returnValue = false;
 			event.cancelBubble = true;
 			return false;
 		}
 	}
-}
+};
 	
-domInvaders.prototype.setPlayerXY= function() {
-	if(this.keysPressed[code('left')]) {
-		var newX = this.playerX - this.playerStepSize;
+domInvaders.prototype.setPlayerXY = function () {
+	var newX,
+	    code = this.utilities.code;
+	if (this.keysPressed[code('left')]) {
+		newX = this.playerX - this.playerStepSize;
 		this.playerX = newX <= 0 ? 0 : newX;
 	}
-	if(this.keysPressed[code('right')]) {
-		var newX = this.playerX + this.playerStepSize;
+	if (this.keysPressed[code('right')]) {
+		newX = this.playerX + this.playerStepSize;
 		this.playerX = newX >= this.w - this.playerWidth ? this.w  - this.playerWidth : newX;
 	}
-}
+};
 
-domInvaders.prototype.fireBullet = function() {
-	if(this.firing)
+domInvaders.prototype.fireBullet = function () {
+	if (this.firing) {
 		return;
+	}
 		
 	this.firing = true;
 	this.drawBullet();
-}
+};
 
-domInvaders.prototype.updateBullet = function() {
+domInvaders.prototype.updateBullet = function () {
 	//move bullet
 	this.bulletY = this.bulletY - this.bulletStepSize;
 	this.drawing.rect(this.bulletX, this.bulletY, this.bulletWidth, this.bulletHeight);
 
 	//check for collision or bound
-	if(this.bulletY <= 0)
+	if (this.bulletY <= 0) {
 		this.firing = false;
+	}
 
-	var collidedElement = this.getElementFromPoint(this.bulletX, this.bulletY);
+	var collidedElement = this.getElementFromPoint(this.bulletX, this.bulletY),
+		i, 
+		nodeCount;
 
-	if(collidedElement){
+	if (collidedElement) {
 		collidedElement.parentNode.removeChild(collidedElement);
-		addClass(collidedElement,'dead');
+		this.utilities.addClass(collidedElement, 'dead');
 		
-		var nodeCount = collidedElement.parentNode.childNodes.length;
-		for ( var i = 0; i < nodeCount; i++ ) {
-			absolutize(collidedElement.parentNode.childNodes[i]);
+		nodeCount = collidedElement.parentNode.childNodes.length;
+		for (i = 0; i < nodeCount; i = i + 1) {
+			this.utilities.absolutize(collidedElement.parentNode.childNodes[i]);
 		}
 
 		this.firing = false;
 
 		return;
 	}
-}
+};
 
-domInvaders.prototype.updateEnemies: function() {
+domInvaders.prototype.updateEnemies = function () {
 
-}
+};
