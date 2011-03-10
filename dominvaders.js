@@ -14,7 +14,7 @@ domInvaders.prototype.init = function () {
 	
 	//todo: import utilties.js and drawing.js
 	//fire up the loop
-	this.intervalId = setInterval(this.bind(this,this.draw), 1000 / this.fps);
+	this.intervalId = setInterval(this.bind(this, this.draw), 1000 / this.fps);
 };
 
 domInvaders.prototype.getConfiguration = function () {
@@ -97,9 +97,9 @@ domInvaders.prototype.setBulletStepSize = function () {
 
 domInvaders.prototype.setupKeys = function () {
 	this.keysPressed = {};
-	this.addEvent(document, 'keydown', this.bind(this,this.keydown));
-	this.addEvent(document, 'keypress',  this.bind(this,this.keypress));
-	this.addEvent(document, 'keyup',  this.bind(this,this.keyup));
+	this.addEvent(document, 'keydown', this.bind(this, this.keydown));
+	this.addEvent(document, 'keypress',  this.bind(this, this.keypress));
+	this.addEvent(document, 'keyup',  this.bind(this, this.keyup));
 };
 
 domInvaders.prototype.keydown = function (event) {
@@ -188,11 +188,6 @@ domInvaders.prototype.updateBullet = function () {
 		collidedElement.parentNode.removeChild(collidedElement);
 		this.addClass(collidedElement, 'dead');
 		
-		nodeCount = collidedElement.parentNode.childNodes.length;
-		for (i = 0; i < nodeCount; i = i + 1) {
-			this.absolutize(collidedElement.parentNode.childNodes[i]);
-		}
-
 		this.firing = false;
 
 		return;

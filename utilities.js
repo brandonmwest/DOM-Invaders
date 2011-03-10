@@ -132,17 +132,3 @@ domInvaders.prototype.getXYpos = function (el) {
 	
 	return xy;
 };
-
-domInvaders.prototype.absolutize = function (el) {
-	var pos = this.getXYpos(el),
-		top = pos.y,
-		left = pos.x,
-		width = el.clientWidth,
-		height = el.clientHeight;
-
-	el.style.position = 'absolute';
-	el.style.top = top + 'px';
-	el.style.left = left + 'px';
-	el.style.width = width + 'px';
-	el.style.height = height + 'px';
-};
