@@ -1,7 +1,3 @@
-var domInvaders = function () {
-    this.init();
-};
-
 domInvaders.prototype.checkBrowser = function () {
 	if (!this.canvas.getContext) {
 		alert('Your browser sucks too much to play. Sorry.');
@@ -68,13 +64,9 @@ domInvaders.prototype.code = function (name) {
 	return name.charCodeAt(0);
 };
 
-domInvaders.prototype.toArray = function (obj) {
-    return Array.prototype.slice.call(obj);
-};
-
 domInvaders.prototype.bind = function (scope, fn) {
     return function () {
-        return fn.apply(scope, this.toArray(arguments));
+        return fn.apply(scope, Array.prototype.slice.call((arguments)));
     };
 };
 
@@ -125,6 +117,7 @@ domInvaders.prototype.indexOf = function (arr, item, from) {
 };
 
 domInvaders.prototype.getXYpos = function (el) {
+	console.log(el);
 	var xy = {"x" : el.offsetLeft, "y" : el.offsetTop},
 		par = this.getXYpos(el.offsetParent),
 		i;

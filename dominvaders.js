@@ -5,10 +5,8 @@ var domInvaders = function () {
 };
 
 domInvaders.prototype.init = function () {
-	this.setupDrawing();
 	this.setupCanvas();
 	this.getConfiguration();
-	this.drawing.game = this;
 	this.setupResize();
 	this.setPlayerStepSize();
 	this.setBulletStepSize();
@@ -16,13 +14,7 @@ domInvaders.prototype.init = function () {
 	
 	//todo: import utilties.js and drawing.js
 	//fire up the loop
-	this.intervalId = setInterval(this.bind(this, this.draw), 1000 / this.fps);
-};
-
-domInvaders.prototype.setupDrawing = function () {
-	this.drawing = new domInvaders.drawing(this);
-	
-	
+	this.intervalId = setInterval(this.bind(this,this.draw), 1000 / this.fps);
 };
 
 domInvaders.prototype.getConfiguration = function () {
@@ -80,7 +72,7 @@ domInvaders.prototype.setupCanvas = function () {
 
 domInvaders.prototype.setupResize = function () {
 	//depends on utilities.js
-	this.addEvent(window, 'resize', this.bind(this, this.resize));
+	this.addEvent(window, 'resize', this.resize);
 };
 
 domInvaders.prototype.resize = function () {		
@@ -105,56 +97,54 @@ domInvaders.prototype.setBulletStepSize = function () {
 
 domInvaders.prototype.setupKeys = function () {
 	this.keysPressed = {};
-	this.addEvent(document, 'keydown', this.bind(this, this.events.keydown));
-	this.addEvent(document, 'keypress', this.bind(this, this.events.keypress));
-	this.addEvent(document, 'keyup', this.bind(this, this.events.keyup));
+	this.addEvent(document, 'keydown', this.bind(this,this.keydown));
+	this.addEvent(document, 'keypress',  this.bind(this,this.keypress));
+	this.addEvent(document, 'keyup',  this.bind(this,this.keyup));
 };
 
-domInvaders.prototype.events = {
-	keydown: function (event) {
-		event = event || window.event;
-		this.keysPressed[event.keyCode] = true;
-		
-		switch (event.keyCode) {
-		case this.code(' '):
-			this.fireBullet();
-			break;
-			
-		default:
-			break;
-		}
-		
-		this.stopEventPropagation(event);
-		return false;
-	},
+domInvaders.prototype.keydown = function (event) {
+	event = event || window.event;
+	this.keysPressed[event.keyCode] = true;
 	
-	keypress: function (event) {
-		event = event || window.event;
-		this.stopEventPropagation(event);
-		return false;
-	},
+	switch (event.keyCode) {
+	case this.code(' '):
+		this.fireBullet();
+		break;
+		
+	default:
+		break;
+	}
 	
-	keyup: function (event) {
-		event = event || window.event;
-		this.keysPressed[event.keyCode] = false;
+	this.stopEventPropagation(event);
+	return false;
+};
+	
+domInvaders.prototype.keypress = function (event) {
+	event = event || window.event;
+	this.stopEventPropagation(event);
+	return false;
+};
+	
+domInvaders.prototype.keyup = function (event) {
+	event = event || window.event;
+	this.keysPressed[event.keyCode] = false;
 
-		this.stopEventPropagation(event);
-		return false;
-	},
+	this.stopEventPropagation(event);
+	return false;
+};
 	
-	stopEventPropagation: function (event) {
-		var code = this.code;
-		if (this.indexOf([code('up'), code('down'), code('right'), code('left'), code(' '), code('B'), code('W'), code('A'), code('S'), code('D')], event.keyCode) !== -1) {
-			if (event.preventDefault) {
-				event.preventDefault();
-			}
-			if (event.stopPropagation) {
-				event.stopPropagation();
-			}
-			event.returnValue = false;
-			event.cancelBubble = true;
-			return false;
+domInvaders.prototype.stopEventPropagation = function (event) {
+	var code = this.code;
+	if (this.indexOf([code('up'), code('down'), code('right'), code('left'), code(' '), code('B'), code('W'), code('A'), code('S'), code('D')], event.keyCode) !== -1) {
+		if (event.preventDefault) {
+			event.preventDefault();
 		}
+		if (event.stopPropagation) {
+			event.stopPropagation();
+		}
+		event.returnValue = false;
+		event.cancelBubble = true;
+		return false;
 	}
 };
 	
@@ -183,7 +173,7 @@ domInvaders.prototype.fireBullet = function () {
 domInvaders.prototype.updateBullet = function () {
 	//move bullet
 	this.bulletY = this.bulletY - this.bulletStepSize;
-	this.drawing.rect(this.bulletX, this.bulletY, this.bulletWidth, this.bulletHeight);
+	this.rect(this.bulletX, this.bulletY, this.bulletWidth, this.bulletHeight);
 
 	//check for collision or bound
 	if (this.bulletY <= 0) {
