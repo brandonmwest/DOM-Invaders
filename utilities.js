@@ -1,3 +1,12 @@
+domInvaders.utilities.prototype.checkBrowser = function() {
+	if ( ! this.canvas.getContext ) {
+		alert('Your browser sucks too much to play. Sorry.');
+		return false;
+	}
+	
+	return true;
+}
+
 function code(name) {
 	var table = {'up': 38, 'down': 40, 'left': 37, 'right': 39, 'esc': 27};
 	if ( table[name] ) return table[name];
@@ -101,11 +110,10 @@ function absolutize(el) {
 	var left = pos.x;
 	var width = el.clientWidth;
 	var height = el.clientHeight;
- 
+
 	el.style.position='absolute';
 	el.style.top = top + 'px';
 	el.style.left = left + 'px';
 	el.style.width = width + 'px';
 	el.style.height = height + 'px';
-	return el;
 };
