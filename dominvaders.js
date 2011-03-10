@@ -5,7 +5,6 @@ var domInvaders = function () {
 };
 
 domInvaders.prototype.init = function () {
-	this.setupUtilities();
 	this.setupDrawing();
 	this.setupCanvas();
 	this.getConfiguration();
@@ -17,11 +16,7 @@ domInvaders.prototype.init = function () {
 	
 	//todo: import utilties.js and drawing.js
 	//fire up the loop
-	this.intervalId = setInterval(this.utilities.bind(this, this.draw), 1000 / this.fps);
-};
-
-domInvaders.prototype.setupUtilities = function () {
-	this.utilities = new domInvaders.utilities();
+	this.intervalId = setInterval(this.bind(this, this.draw), 1000 / this.fps);
 };
 
 domInvaders.prototype.setupUtilities = function () {
@@ -84,7 +79,7 @@ domInvaders.prototype.setupCanvas = function () {
 
 domInvaders.prototype.setupResize = function () {
 	//depends on utilities.js
-	this.utilities.addEvent(window, 'resize', this.utilities.bind(this, this.resize));
+	this.addEvent(window, 'resize', this.bind(this, this.resize));
 };
 
 domInvaders.prototype.resize = function () {		
@@ -109,9 +104,9 @@ domInvaders.prototype.setBulletStepSize = function () {
 
 domInvaders.prototype.setupKeys = function () {
 	this.keysPressed = {};
-	this.utilities.addEvent(document, 'keydown', this.utilities.bind(this, this.events.keydown));
-	this.utilities.addEvent(document, 'keypress', this.utilities.bind(this, this.events.keypress));
-	this.utilities.addEvent(document, 'keyup', this.utilities.bind(this, this.events.keyup));
+	this.addEvent(document, 'keydown', this.bind(this, this.events.keydown));
+	this.addEvent(document, 'keypress', this.bind(this, this.events.keypress));
+	this.addEvent(document, 'keyup', this.bind(this, this.events.keyup));
 };
 
 domInvaders.prototype.events = {
@@ -120,7 +115,7 @@ domInvaders.prototype.events = {
 		this.keysPressed[event.keyCode] = true;
 		
 		switch (event.keyCode) {
-		case this.utilities.code(' '):
+		case this.code(' '):
 			this.fireBullet();
 			break;
 			
@@ -147,8 +142,8 @@ domInvaders.prototype.events = {
 	},
 	
 	stopEventPropagation: function (event) {
-		var code = this.utilities.code;
-		if (this.utilities.indexOf([code('up'), code('down'), code('right'), code('left'), code(' '), code('B'), code('W'), code('A'), code('S'), code('D')], event.keyCode) !== -1) {
+		var code = this.code;
+		if (this.indexOf([code('up'), code('down'), code('right'), code('left'), code(' '), code('B'), code('W'), code('A'), code('S'), code('D')], event.keyCode) !== -1) {
 			if (event.preventDefault) {
 				event.preventDefault();
 			}
@@ -164,7 +159,7 @@ domInvaders.prototype.events = {
 	
 domInvaders.prototype.setPlayerXY = function () {
 	var newX,
-	    code = this.utilities.code;
+	    code = this.code;
 	if (this.keysPressed[code('left')]) {
 		newX = this.playerX - this.playerStepSize;
 		this.playerX = newX <= 0 ? 0 : newX;
@@ -200,11 +195,11 @@ domInvaders.prototype.updateBullet = function () {
 
 	if (collidedElement) {
 		collidedElement.parentNode.removeChild(collidedElement);
-		this.utilities.addClass(collidedElement, 'dead');
+		this.addClass(collidedElement, 'dead');
 		
 		nodeCount = collidedElement.parentNode.childNodes.length;
 		for (i = 0; i < nodeCount; i = i + 1) {
-			this.utilities.absolutize(collidedElement.parentNode.childNodes[i]);
+			this.absolutize(collidedElement.parentNode.childNodes[i]);
 		}
 
 		this.firing = false;
