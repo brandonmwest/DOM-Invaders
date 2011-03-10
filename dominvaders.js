@@ -12,6 +12,11 @@ domInvaders.prototype.init = function() {
 	this.setPlayerStepSize();
 	this.setBulletStepSize();
 	this.setupKeys();
+	
+	//todo: import utilties.js and drawing.js
+	//fire up the loop
+	this.intervalId = setInterval(bind(this,this.draw),1000/this.fps);
+
 }
 
 domInvaders.prototype.setupUtilities = function() {
@@ -103,9 +108,9 @@ domInvaders.prototype.setBulletStepSize = function() {
 
 domInvaders.prototype.setupKeys: function() {
 	this.keysPressed = {};
-	addEvent(document, 'keydown', bind(this,this.keydown));
-	addEvent(document, 'keypress', bind(this,this.keypress));
-	addEvent(document, 'keyup', bind(this,this.keyup));
+	addEvent(document, 'keydown', bind(this,this.events.keydown));
+	addEvent(document, 'keypress', bind(this,this.events.keypress));
+	addEvent(document, 'keyup', bind(this,this.events.keyup));
 },
 
 domInvaders.prototype.events = {
@@ -149,142 +154,52 @@ domInvaders.prototype.events = {
 		}
 	}
 }
+	
+domInvaders.prototype.setPlayerXY= function() {
+	if(this.keysPressed[code('left')]) {
+		var newX = this.playerX - this.playerStepSize;
+		this.playerX = newX <= 0 ? 0 : newX;
+	}
+	if(this.keysPressed[code('right')]) {
+		var newX = this.playerX + this.playerStepSize;
+		this.playerX = newX >= this.w - this.playerWidth ? this.w  - this.playerWidth : newX;
+	}
+}
 
-var domInvaders = {
-	initialize: function() {
-		this.setupCanvas();
-		this.getConfiguration();
-		this.drawing.game = this;
-		this.setupResize();
-		this.setPlayerStepSize();
-		this.setBulletStepSize();
-		this.setupKeys();
+domInvaders.prototype.fireBullet = function() {
+	if(this.firing)
+		return;
 		
-		//todo: import utilties.js 
-		this.intervalId = setInterval(bind(this,this.draw),1000/this.fps);
-	},
+	this.firing = true;
+	this.drawBullet();
+}
 
-	
-	drawPlayer: function() {
-		//base
-		this.drawing.rect(this.playerX, this.playerY, this.playerWidth, this.playerHeight);
-		//tier1
-		this.drawing.rect(this.playerX + this.playerWidth*.075, this.playerY - this.playerHeight*.25, this.playerWidth*.85, this.playerHeight*.25);
-		//tier2
-		this.drawing.rect(this.playerX + this.playerWidth*.40, this.playerY -  this.playerHeight*.80, this.playerWidth*.20, this.playerHeight*.80);
-		//top nub
-		this.drawing.rect(this.playerX + this.playerWidth/2-this.bulletWidth/2, this.playerY - this.playerHeight, this.bulletWidth, this.playerHeight*1.25);
-	},
-	
-	fireBullet: function() {
-		if(this.firing)
-			return;
-			
-		this.firing = true;
-		this.drawBullet();
-	},
-	
-	drawBullet: function() {
-		this.bulletX = this.playerX + this.playerWidth/2-this.bulletWidth/2;
-		this.bulletY = this.playerY - this.playerHeight*1.25;
+domInvaders.prototype.updateBullet = function() {
+	//move bullet
+	this.bulletY = this.bulletY - this.bulletStepSize;
+	this.drawing.rect(this.bulletX, this.bulletY, this.bulletWidth, this.bulletHeight);
+
+	//check for collision or bound
+	if(this.bulletY <= 0)
+		this.firing = false;
+
+	var collidedElement = this.getElementFromPoint(this.bulletX, this.bulletY);
+
+	if(collidedElement){
+		collidedElement.parentNode.removeChild(collidedElement);
+		addClass(collidedElement,'dead');
 		
-		this.drawing.rect(this.bulletX, this.bulletY, this.bulletWidth, this.bulletHeight);
-	},
-	
-
-		
-	draw: function() {
-		this.drawing.clear();
-		this.setPlayerXY();
-		this.drawPlayer();
-		
-		this.updateEnemies();
-		
-		if(this.firing)
-			this.updateBullet();
-	},
-	
-	setPlayerXY: function() {
-		if(this.keysPressed[code('left')]) {
-			var newX = this.playerX - this.playerStepSize;
-			this.playerX = newX <= 0 ? 0 : newX;
-		}
-		if(this.keysPressed[code('right')]) {
-			var newX = this.playerX + this.playerStepSize;
-			this.playerX = newX >= this.w - this.playerWidth ? this.w  - this.playerWidth : newX;
-		}
-	},
-	
-	updateBullet: function() {
-		//move bullet
-		this.bulletY = this.bulletY - this.bulletStepSize;
-		this.drawing.rect(this.bulletX, this.bulletY, this.bulletWidth, this.bulletHeight);
-
-		//check for collision or bound
-		if(this.bulletY <= 0)
-			this.firing = false;
-
-		var collidedElement = this.getElementFromPoint(this.bulletX, this.bulletY);
-	
-		if(collidedElement){
-			collidedElement.parentNode.removeChild(collidedElement);
-			addClass(collidedElement,'dead');
-			
-			var nodeCount = collidedElement.parentNode.childNodes.length;
-			for ( var i = 0; i < nodeCount; i++ ) {
-				absolutize(collidedElement.parentNode.childNodes[i]);
-			}
-
-			this.firing = false;
-
-			return;
-		}
-	},
-	
-	getElementFromPoint: function(x, y) {
-		this.canvas.style.visibility='hidden';
-
-		var element = document.elementFromPoint(x, y);
-
-		if (!element) {
-			this.canvas.style.visibility='visible';
-			return false;
-		}
-
-		if ( element.nodeType == 3 )
-			element = element.parentNode;
-
-		if (indexOf(this.ignoredTags, element.tagName.toUpperCase()) == -1
-			&& this.hasOnlyTextualChildren(element)){
-				this.canvas.style.visibility='visible';
-				return absolutize(element);
-			}
-		this.canvas.style.visibility='visible';
-
-		return false;
-	},
-	
-	hasOnlyTextualChildren: function(element) {
-		if ( element.offsetLeft < -100 && element.offsetWidth > 0 && element.offsetHeight > 0 ) return false;
-		if ( indexOf(this.hiddenTags, element.tagName) != -1 ) return true;
-		
-		if ( element.offsetWidth == 0 && element.offsetHeight == 0 ) return false;
-		
-		var nodeCount = element.childNodes.length;
+		var nodeCount = collidedElement.parentNode.childNodes.length;
 		for ( var i = 0; i < nodeCount; i++ ) {
-			// <br /> doesn't count... and empty elements
-			if (
-				indexOf(this.hiddenTags, element.childNodes[i].tagName) == -1
-				&& element.childNodes[i].childNodes.length != 0
-			) return false;
+			absolutize(collidedElement.parentNode.childNodes[i]);
 		}
-		return true;
-	},
-	
-	updateEnemies: function() {
-	
-	},
-	
-	
-		
-};
+
+		this.firing = false;
+
+		return;
+	}
+}
+
+domInvaders.prototype.updateEnemies: function() {
+
+}

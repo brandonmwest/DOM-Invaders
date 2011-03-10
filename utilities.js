@@ -7,6 +7,47 @@ domInvaders.utilities.prototype.checkBrowser = function() {
 	return true;
 }
 
+
+	getElementFromPoint: function(x, y) {
+		this.canvas.style.visibility='hidden';
+
+		var element = document.elementFromPoint(x, y);
+
+		if (!element) {
+			this.canvas.style.visibility='visible';
+			return false;
+		}
+
+		if ( element.nodeType == 3 )
+			element = element.parentNode;
+
+		if (indexOf(this.ignoredTags, element.tagName.toUpperCase()) == -1
+			&& this.hasOnlyTextualChildren(element)){
+				this.canvas.style.visibility='visible';
+				return absolutize(element);
+			}
+		this.canvas.style.visibility='visible';
+
+		return false;
+	},
+	
+	hasOnlyTextualChildren: function(element) {
+		if ( element.offsetLeft < -100 && element.offsetWidth > 0 && element.offsetHeight > 0 ) return false;
+		if ( indexOf(this.hiddenTags, element.tagName) != -1 ) return true;
+		
+		if ( element.offsetWidth == 0 && element.offsetHeight == 0 ) return false;
+		
+		var nodeCount = element.childNodes.length;
+		for ( var i = 0; i < nodeCount; i++ ) {
+			// <br /> doesn't count... and empty elements
+			if (
+				indexOf(this.hiddenTags, element.childNodes[i].tagName) == -1
+				&& element.childNodes[i].childNodes.length != 0
+			) return false;
+		}
+		return true;
+	},
+
 function code(name) {
 	var table = {'up': 38, 'down': 40, 'left': 37, 'right': 39, 'esc': 27};
 	if ( table[name] ) return table[name];
