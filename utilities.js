@@ -117,7 +117,6 @@ domInvaders.prototype.indexOf = function (arr, item, from) {
 };
 
 domInvaders.prototype.getXYpos = function (el) {
-	console.log(el);
 	var xy = {"x" : el.offsetLeft, "y" : el.offsetTop},
 		par = this.getXYpos(el.offsetParent),
 		i;
