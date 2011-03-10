@@ -23,7 +23,7 @@ domInvaders.prototype.getElementFromPoint = function (x, y) {
 
 	if (this.indexOf(this.ignoredTags, element.tagName.toUpperCase()) === -1 && this.hasOnlyTextualChildren(element)) {
 		this.canvas.style.visibility = 'visible';
-		return this.absolutize(element);
+		return element;
 	}
 	this.canvas.style.visibility = 'visible';
 

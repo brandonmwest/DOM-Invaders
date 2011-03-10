@@ -183,7 +183,7 @@ domInvaders.prototype.updateBullet = function () {
 	var collidedElement = this.getElementFromPoint(this.bulletX, this.bulletY),
 		i, 
 		nodeCount;
-
+	
 	if (collidedElement) {
 		collidedElement.parentNode.removeChild(collidedElement);
 		this.addClass(collidedElement, 'dead');
