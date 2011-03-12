@@ -364,9 +364,9 @@ domInvaders.prototype.indexOf = function (arr, item, from) {
 	return -1;
 };
 
-domInvaders.prototype.getXYpos = function (el) {
+domInvaders.prototype.getElementCoordinates = function (el) {
 	var xy = {"x" : el.offsetLeft, "y" : el.offsetTop},
-		par = this.getXYpos(el.offsetParent),
+		par = this.getElementCoordinates(el.offsetParent),
 		i;
 	
 	if (!el) {
