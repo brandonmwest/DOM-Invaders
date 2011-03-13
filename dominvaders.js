@@ -107,7 +107,7 @@ domInvaders.prototype.keydown = function (event) {
 	this.keysPressed[event.keyCode] = true;
 	
 	switch (event.keyCode) {
-	case this.code(' '):
+	case this.getKeyCode(' '):
 		this.fireBullet();
 		break;
 		
@@ -134,8 +134,8 @@ domInvaders.prototype.keyup = function (event) {
 };
 	
 domInvaders.prototype.stopEventPropagation = function (event) {
-	var code = this.code;
-	if (this.indexOf([code('up'), code('down'), code('right'), code('left'), code(' '), code('B'), code('W'), code('A'), code('S'), code('D')], event.keyCode) !== -1) {
+	var getKeyCode = this.getKeyCode;
+	if (this.indexOf([getKeyCode('up'), getKeyCode('down'), getKeyCode('right'), getKeyCode('left'), getKeyCode(' '), getKeyCode('B'), getKeyCode('W'), getKeyCode('A'), getKeyCode('S'), getKeyCode('D')], event.keyCode) !== -1) {
 		if (event.preventDefault) {
 			event.preventDefault();
 		}
@@ -150,12 +150,12 @@ domInvaders.prototype.stopEventPropagation = function (event) {
 	
 domInvaders.prototype.setPlayerXY = function () {
 	var newX,
-	    code = this.code;
-	if (this.keysPressed[code('left')]) {
+	    getKeyCode = this.getKeyCode;
+	if (this.keysPressed[getKeyCode('left')]) {
 		newX = this.playerX - this.playerStepSize;
 		this.playerX = newX <= 0 ? 0 : newX;
 	}
-	if (this.keysPressed[code('right')]) {
+	if (this.keysPressed[getKeyCode('right')]) {
 		newX = this.playerX + this.playerStepSize;
 		this.playerX = newX >= this.w - this.playerWidth ? this.w  - this.playerWidth : newX;
 	}
@@ -171,11 +171,9 @@ domInvaders.prototype.fireBullet = function () {
 };
 
 domInvaders.prototype.updateBullet = function () {
-	//move bullet
 	this.bulletY = this.bulletY - this.bulletStepSize;
 	this.rect(this.bulletX, this.bulletY, this.bulletWidth, this.bulletHeight);
 
-	//check for collision or bound
 	if (this.bulletY <= 0) {
 		this.firing = false;
 	}
@@ -195,14 +193,14 @@ domInvaders.prototype.updateBullet = function () {
 };
 
 domInvaders.prototype.updateEnemies = function () {
-
+	
 };
 
 domInvaders.prototype.draw = function () {
 	this.clear();
 	this.setPlayerXY();
 	this.drawPlayer();
-	
+	this.drawEnemies();
 	this.updateEnemies();
 	
 	if (this.firing) {
@@ -214,13 +212,17 @@ domInvaders.prototype.drawPlayer = function () {
 	//base
 	this.rect(this.playerX, this.playerY, this.playerWidth, this.playerHeight);
 	//tier1
-	this.rect(this.playerX + this.playerWidth * 0.075, this.playerY - this.playerHeight * 0.25, this.playerWidth * 0.85, this.playerHeight * 0.25);
+	this.rect(this.playerX + this.playerWidth * 0.075, this.playerY - this.playerHeight * 0.25, this.playerWidth * 0.85, this. playerHeight * 0.25);
 	//tier2
 	this.rect(this.playerX + this.playerWidth * 0.40, this.playerY -  this.playerHeight * 0.80, this.playerWidth * 0.20, this.playerHeight * 0.80);
 	//top nub
 	this.rect(this.playerX + this.playerWidth / 2 - this.bulletWidth / 2, this.playerY - this.playerHeight, this.bulletWidth, this.playerHeight * 1.25);
 };
+
+domInvaders.prototype.drawEnemies = function () {
 	
+};
+
 domInvaders.prototype.drawBullet = function () {
 	this.bulletX = this.playerX + this.playerWidth / 2 - this.bulletWidth / 2;
 	this.bulletY = this.playerY - this.playerHeight * 1.25;
@@ -304,12 +306,12 @@ domInvaders.prototype.hasOnlyTextualChildren = function (element) {
 	return true;
 };
 
-domInvaders.prototype.code = function (name) {
-	var table = {'up': 38, 'down': 40, 'left': 37, 'right': 39, 'esc': 27};
-	if (table[name]) {
-		return table[name];
+domInvaders.prototype.getKeyCode = function (keyName) {
+	var codes = {'up': 38, 'down': 40, 'left': 37, 'right': 39, 'esc': 27};
+	if (codes[keyName]) {
+		return codes[keyName];
 	}
-	return name.charCodeAt(0);
+	return keyName.charCodeAt(0);
 };
 
 domInvaders.prototype.bind = function (scope, fn) {
