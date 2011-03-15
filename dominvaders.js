@@ -12,8 +12,6 @@ domInvaders.prototype.init = function () {
 	this.setBulletStepSize();
 	this.setupKeys();
 	
-	//todo: import utilties.js and drawing.js
-	//fire up the loop
 	this.intervalId = setInterval(this.bind(this, this.draw), 1000 / this.fps);
 };
 
@@ -178,9 +176,7 @@ domInvaders.prototype.updateBullet = function () {
 		this.firing = false;
 	}
 
-	var collidedElement = this.getElementFromPoint(this.bulletX, this.bulletY),
-		i, 
-		nodeCount;
+	var collidedElement = this.getElementFromPoint(this.bulletX, this.bulletY);
 	
 	if (collidedElement) {
 		collidedElement.parentNode.removeChild(collidedElement);
@@ -212,7 +208,7 @@ domInvaders.prototype.drawPlayer = function () {
 	//base
 	this.rect(this.playerX, this.playerY, this.playerWidth, this.playerHeight);
 	//tier1
-	this.rect(this.playerX + this.playerWidth * 0.075, this.playerY - this.playerHeight * 0.25, this.playerWidth * 0.85, this. playerHeight * 0.25);
+	this.rect(this.playerX + this.playerWidth * 0.075, this.playerY - this.playerHeight * 0.25, this.playerWidth * 0.85, this.playerHeight * 0.25);
 	//tier2
 	this.rect(this.playerX + this.playerWidth * 0.40, this.playerY -  this.playerHeight * 0.80, this.playerWidth * 0.20, this.playerHeight * 0.80);
 	//top nub
@@ -250,7 +246,7 @@ domInvaders.prototype.clear = function () {
 
 domInvaders.prototype.checkBrowser = function () {
 	if (!this.canvas.getContext) {
-		alert('Your browser sucks too much to play. Sorry.');
+		window.alert("Your browser can't draw a canvas. Sorry.");
 		return false;
 	}
 	
