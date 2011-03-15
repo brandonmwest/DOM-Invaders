@@ -11,6 +11,7 @@ domInvaders.prototype.init = function () {
 	this.setPlayerStepSize();
 	this.setBulletStepSize();
 	this.setupKeys();
+	this.setupEnemies();
 	
 	this.intervalId = setInterval(this.bind(this, this.draw), 1000 / this.fps);
 };
@@ -31,11 +32,10 @@ domInvaders.prototype.getConfiguration = function () {
 	this.playerSpeed = 0.5;
 	this.bulletSpeed = 1.5;
 	
+	this.enemyMaxWidth = this.playerWidth;
+	
 	this.playerX = (this.w - this.playerWidth) / 2;
 	this.playerY = this.h - this.playerHeight - 10;
-	
-	this.ignoredTags = ['HTML', 'HEAD', 'BODY', 'SCRIPT', 'TITLE', 'META', 'STYLE', 'LINK'];
-	this.hiddenTags = ['BR', 'HR'];
 };
 
 domInvaders.prototype.setupCanvas = function () {
@@ -80,10 +80,14 @@ domInvaders.prototype.resize = function () {
 	this.canvas.setAttribute('width', this.w);
 	this.canvas.setAttribute('height', this.h);
 	
-	this.setPlayerStepSize();
-	this.setBulletStepSize();
+	this.setStepSizes();
 	//todo: reposition the player and enemies ?
 };
+
+domInvaders.prototype.setStepSizes() = function () {
+	this.setPlayerStepSize();
+	this.setBulletStepSize();
+}
 
 domInvaders.prototype.setPlayerStepSize = function () {
 	this.playerStepSize = this.w / this.unitsX * this.playerSpeed;
@@ -98,6 +102,43 @@ domInvaders.prototype.setupKeys = function () {
 	this.addEvent(document, 'keydown', this.bind(this, this.keydown));
 	this.addEvent(document, 'keypress',  this.bind(this, this.keypress));
 	this.addEvent(document, 'keyup',  this.bind(this, this.keyup));
+};
+
+domInvaders.prototype.setupEnemies = function () {
+	var enemies = {},
+		rowSpacing = 20,
+		columnSpacing = rowSpacing / 2,
+		enemiesPerRow = 11,
+		rows = 5,
+		rowEnemyTypes = {enemyType: 0, enemyType:0, enemyType:1, enemyType:1, enemyType:2},
+		i, j,
+		enemy;
+	
+	for(i = 0; i < rowEnemyTypes.length; i = i + 1) {
+		rowEnemyTypes[i].enemyWidth = getEnemyWidth(rowEnemyTypes[i].enemyType);
+	};
+	
+	for(i = 0; i < rows; i = i + 1) {
+		var rowEnemies = {};
+		
+		for(j = 0, j < enemiesPerRow, j = j + 1) {
+			var row = {};
+			row.push({
+				enemyType: rowEnemyTypes[i].enemyType, 
+				x: j * (rowEnemyTypes[i].enemyWidth + 20), 
+				y: 
+			};);
+		};
+	};
+	
+	var row1 = {"x": 10, "y": this.playerY - 300};
+	
+	this.enemies = {};
+	//go bottom up (biggest enemy to smallest)
+	//each enemy will have a vector (x,y) for it's center
+	//3 kinds of enemies plus random spaceship
+	
+	
 };
 
 domInvaders.prototype.keydown = function (event) {
