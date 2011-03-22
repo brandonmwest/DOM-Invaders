@@ -70,7 +70,6 @@ domInvaders.prototype.setupCanvas = function () {
 };
 
 domInvaders.prototype.setupResize = function () {
-	//depends on utilities.js
 	this.addEvent(window, 'resize', this.resize);
 };
 
@@ -85,10 +84,10 @@ domInvaders.prototype.resize = function () {
 	//todo: reposition the player and enemies ?
 };
 
-domInvaders.prototype.setStepSizes() = function () {
+domInvaders.prototype.setStepSizes = function () {
 	this.setPlayerStepSize();
 	this.setBulletStepSize();
-}
+};
 
 domInvaders.prototype.setPlayerStepSize = function () {
 	this.playerStepSize = this.w / this.unitsX * this.playerSpeed;
@@ -106,35 +105,35 @@ domInvaders.prototype.setupKeys = function () {
 };
 
 domInvaders.prototype.setupEnemies = function () {
-	var enemies = {},
-		rowSpacing = 20,
-		columnSpacing = rowSpacing / 2,
-		enemiesPerRow = 11,
-		rows = 5,
-		rowEnemyTypes = {enemyType: 0, enemyType:0, enemyType:1, enemyType:1, enemyType:2},
-		i, j,
-		enemy;
-	
-	for(i = 0; i < rowEnemyTypes.length; i = i + 1) {
-		rowEnemyTypes[i].enemyWidth = getEnemyWidth(rowEnemyTypes[i].enemyType);
-	};
-	
-	for(i = 0; i < rows; i = i + 1) {
-		var rowEnemies = {};
-		
-		for(j = 0, j < enemiesPerRow, j = j + 1) {
-			var row = {};
-			row.push({
-				enemyType: rowEnemyTypes[i].enemyType, 
-				x: j * (rowEnemyTypes[i].enemyWidth + 20), 
-				y: 
-			};);
-		};
-	};
-	
-	var row1 = {"x": 10, "y": this.playerY - 300};
-	
-	this.enemies = {};
+//	var enemies = {},
+//		rowSpacing = 20,
+//		columnSpacing = rowSpacing / 2,
+//		enemiesPerRow = 11,
+//		rows = 5,
+//		rowEnemyTypes = {enemyType: 0, enemyType:0, enemyType:1, enemyType:1, enemyType:2},
+//		i, j,
+//		enemy;
+//	
+//	for(i = 0; i < rowEnemyTypes.length; i = i + 1) {
+//		rowEnemyTypes[i].enemyWidth = getEnemyWidth(rowEnemyTypes[i].enemyType);
+//	};
+//	
+//	for(i = 0; i < rows; i = i + 1) {
+//		var rowEnemies = {};
+//		
+//		for(j = 0, j < enemiesPerRow, j = j + 1) {
+//			var row = {};
+//			row.push({
+//				enemyType: rowEnemyTypes[i].enemyType, 
+//				x: j * (rowEnemyTypes[i].enemyWidth + 20), 
+//				y: 
+//			};);
+//		};
+//	};
+//	
+//	var row1 = {"x": 10, "y": this.playerY - 300};
+//	
+//	this.enemies = {};
 	//go bottom up (biggest enemy to smallest)
 	//each enemy will have a vector (x,y) for it's center
 	//3 kinds of enemies plus random spaceship
@@ -309,7 +308,7 @@ domInvaders.prototype.getElementFromPoint = function (x, y) {
 		element = element.parentNode;
 	}
 
-	if (this.indexOf(this.ignoredTags, element.tagName.toUpperCase()) === -1 && this.hasOnlyTextualChildren(element)) {
+	if (this.hasOnlyTextualChildren(element)) {
 		this.canvas.style.visibility = 'visible';
 		return element;
 	}
@@ -326,18 +325,13 @@ domInvaders.prototype.hasOnlyTextualChildren = function (element) {
 		return false;
 	}
 	
-	if (this.indexOf(this.hiddenTags, element.tagName) !== -1) {
-		return true;
-	}
-	
 	if (element.offsetWidth === 0 && element.offsetHeight === 0) {
 		return false;
 	}
 			
 	for (i = 0; i < nodeCount; i = i + 1) {
 		// <br /> doesn't count... and empty elements
-		if (this.indexOf(this.hiddenTags, element.childNodes[i].tagName) === -1
-				&& element.childNodes[i].childNodes.length !== 0) {
+		if (element.childNodes[i].childNodes.length !== 0) {
 			return false;
 		}
 	}
