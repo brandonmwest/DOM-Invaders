@@ -1,5 +1,6 @@
 /*global window */
 
+
 var domInvaders = function () {
     this.init();
 };
